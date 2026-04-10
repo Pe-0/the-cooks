@@ -15,7 +15,7 @@ namespace Project
             Name = "not null";
             Address = "Luxor";
             ID = 500;
-            Phone = +201122334455;
+            Phone = 100000000;
             CustomerCount++;
         }
         public Customer (string Name , string Adrress ,int ID , long Phone)//constructor with parameters + CustomerCount
@@ -29,12 +29,12 @@ namespace Project
                 ID = 500;
                 Console.WriteLine("Error ID input");
             }
-            if (Phone >= 1000000000)
+            if (Phone >= 100000000)
                 this.Phone = Phone;
             else
             {
                 Console.WriteLine("Error Phone Number input");
-                Phone = +201122334455;
+                Phone = 100000000;
             }
             CustomerCount++;
         }
@@ -58,12 +58,12 @@ namespace Project
         }
         public void setNum(long Phone)//Phone NUM Setter
         {
-            if (Phone >= 1000000000)
+            if (Phone >= 100000000)
                 this.Phone = Phone;
             else
             {
                 Console.WriteLine("Error Phone Number input");
-                Phone = +201122334455;
+                Phone = 100000000;
             }
         }
         public string getName()//Name Getter 
@@ -88,7 +88,7 @@ namespace Project
         }
         public void Display()//Customer Info
         {
-            Console.Write("Your Name is : " + Name + " And Your Address is : " + Address + " and Your ID is : "+ID);
+            Console.Write("Your Name is : " + Name + " And Your Address is : " + Address + " and Your ID is : "+ID+ " And your NUM is : "+ Phone);
         }
 
     }
