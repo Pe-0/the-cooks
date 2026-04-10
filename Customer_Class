@@ -1,7 +1,7 @@
 using System;
 namespace Project
 {
-    class Customer
+    public class Customer
     {
         //Peter Part
         protected string Name;
