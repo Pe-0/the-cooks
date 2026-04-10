@@ -8,15 +8,17 @@ namespace Project
         protected string Address;
         protected int ID;
         private static int CustomerCount = 0;
+        private long Phone;
 
         public Customer()//constructor without parameters + Customer Counter
         {
             Name = "not null";
             Address = "Luxor";
             ID = 500;
+            Phone = +201122334455;
             CustomerCount++;
         }
-        public Customer (string Name , string Adrress ,int ID)//constructor with parameters
+        public Customer (string Name , string Adrress ,int ID , long Phone)//constructor with parameters + CustomerCount
         {
             this.Name = Name;
             this.Address = Adrress;
@@ -27,6 +29,14 @@ namespace Project
                 ID = 500;
                 Console.WriteLine("Error ID input");
             }
+            if (Phone >= 1000000000)
+                this.Phone = Phone;
+            else
+            {
+                Console.WriteLine("Error Phone Number input");
+                Phone = +201122334455;
+            }
+            CustomerCount++;
         }
         public void setName(string Name)//name Setter
         {
@@ -46,6 +56,16 @@ namespace Project
                 Console.WriteLine("Error ID input");
             }
         }
+        public void setNum(long Phone)//Phone NUM Setter
+        {
+            if (Phone >= 1000000000)
+                this.Phone = Phone;
+            else
+            {
+                Console.WriteLine("Error Phone Number input");
+                Phone = +201122334455;
+            }
+        }
         public string getName()//Name Getter 
         {
             return Name;
@@ -62,9 +82,14 @@ namespace Project
         {
             return CustomerCount;
         }
+        public long getNUM()//Phone Number Getter
+        {
+            return Phone;
+        }
         public void Display()//Customer Info
         {
             Console.Write("Your Name is : " + Name + " And Your Address is : " + Address + " and Your ID is : "+ID);
         }
+
     }
 }
