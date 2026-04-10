@@ -1,0 +1,70 @@
+using System;
+namespace Project
+{
+    class Customer
+    {
+        //Peter Part
+        protected string Name;
+        protected string Address;
+        protected int ID;
+        private static int CustomerCount = 0;
+
+        public Customer()//constructor without parameters + Customer Counter
+        {
+            Name = "not null";
+            Address = "Luxor";
+            ID = 500;
+            CustomerCount++;
+        }
+        public Customer (string Name , string Adrress ,int ID)//constructor with parameters
+        {
+            this.Name = Name;
+            this.Address = Adrress;
+            if (ID > 0)
+                this.ID = ID;
+            else
+            {
+                ID = 500;
+                Console.WriteLine("Error ID input");
+            }
+        }
+        public void setName(string Name)//name Setter
+        {
+            this.Name=Name;
+        }
+        public void setAddress(string Address)//Address Setter
+        {
+            this.Address=Address;
+        }
+        public void setId(int ID)//ID Setter
+        {
+            if (ID > 0)
+                this.ID = ID;
+            else
+            {
+                ID = 500;
+                Console.WriteLine("Error ID input");
+            }
+        }
+        public string getName()//Name Getter 
+        {
+            return Name;
+        }
+        public string getAddress()//Address Getter
+        {
+            return Address;
+        }
+        public int getID()//ID Getter
+        {
+            return ID;
+        }
+        public int getCustomerCounter()//Customer Counter Getter
+        {
+            return CustomerCount;
+        }
+        public void Display()//Customer Info
+        {
+            Console.Write("Your Name is : " + Name + " And Your Address is : " + Address + " and Your ID is : "+ID);
+        }
+    }
+}
