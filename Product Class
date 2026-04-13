@@ -1,0 +1,31 @@
+using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Xml.Linq;
+namespace Project
+{       //peter part
+    public class Product
+    {
+        //property 
+        public int Product_ID { get; set; }// Product ID
+        public string Product_Name { get; set; }//Product Name
+        public int Quantity { get; set; }//available quantity
+        public float Product_Price { get; set; }// Product Price
+        public string Product_Description { get; set; }// Product description
+        
+
+        public Product(int productId, string name, float price, int quantity, string description)//Constructor parameterized 
+        {
+            Product_ID = productId;//store Product ID
+            Product_Name = name;//Store Product Name
+            Product_Price = price;//Store Price of Product
+            Quantity = quantity;//Store Quantity
+            Product_Description = description;//Store Description
+            
+        }
+        public void DisplayProduct()//Display Product Info 
+        {
+            Console.WriteLine(" ID:" +Product_ID + " Name:" + Product_Name+" Price:"+ Product_Price + " Quantity: "+Quantity + " Description:" +Product_Description);
+        }
+    }
+}
