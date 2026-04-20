@@ -1,31 +1,102 @@
+using App;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Xml.Linq;
-namespace Project
-{       //peter part
-    public class Product
-    {
-        //property 
-        public int Product_ID { get; set; }// Product ID
-        public string Product_Name { get; set; }//Product Name
-        public int Quantity { get; set; }//available quantity
-        public float Product_Price { get; set; }// Product Price
-        public string Product_Description { get; set; }// Product description
-        
+using System.Threading.Tasks;
 
-        public Product(int productId, string name, float price, int quantity, string description)//Constructor parameterized 
+namespace ConsoleApp2
+{   
+    public abstract class Product
+    {
+        protected int ID;
+        protected string name;
+        protected float price;
+        public int quantity { get; set; }
+        public string Product_Description { get; set; }
+        protected Product()
         {
-            Product_ID = productId;//store Product ID
-            Product_Name = name;//Store Product Name
-            Product_Price = price;//Store Price of Product
-            Quantity = quantity;//Store Quantity
-            Product_Description = description;//Store Description
-            
+            ID = 0;
+            name = "null";
+            price = 0;
+            quantity = 0;
+            Product_Description = "null";
         }
-        public void DisplayProduct()//Display Product Info 
+        protected Product(int ID, string name, float Price, int quantity, string Product_Description)
         {
-            Console.WriteLine(" ID:" +Product_ID + " Name:" + Product_Name+" Price:"+ Product_Price + " Quantity: "+Quantity + " Description:" +Product_Description);
+            if (ID >= 0)
+            {
+                this.ID = ID;
+            }
+            else
+            {
+                this.ID = 0;
+                Console.WriteLine("Error in ID number");
+            }
+            this.name = name;
+            if (Price >= 0)
+                this.price = Price;
+            else
+            {
+                this.price = 0;
+                Console.WriteLine("Price Can’t be in negative");
+            }
+            if (quantity >= 0)
+            {
+                this.quantity = quantity;
+            }
+            else
+            {
+                this.quantity = 0;
+                Console.WriteLine("Error in ID number");
+            }
+            this.Product_Description = Product_Description;
+        }
+
+        public abstract float CalculatePrice();
+        public virtual void DisplayInfo()
+        {
+            Console.WriteLine("ID: " + ID + " name:" + name + " Price:" + price);
+
+        }
+    }
+    //abstraction part (ship and discounts)
+    public class Physical : Product
+    {
+        private float Shipping_Cost;
+        private float Discount;
+        public Physical()
+        {
+            Shipping_Cost = 0;
+            Discount = 0;
+        }
+        public Physical(int ID, string name, float price, float Shipping_Cost, float Discount, int quantity, string Product_Description) : base(ID, name, price, quantity, Product_Description)
+        {
+            if (Shipping_Cost >= 0)
+                this.Shipping_Cost = Shipping_Cost;
+            else
+            {
+                Console.WriteLine("Error value");
+                Shipping_Cost = 0;
+            }
+            if (Discount >= 0)
+                this.Discount = Discount;
+            else
+            {
+                Console.WriteLine("error value");
+                Discount = 0;
+            }
+
+        }
+        public override float CalculatePrice()
+        {
+            return (price + Shipping_Cost) - Discount;
+        }
+        public override void DisplayInfo()
+        {
+            base.DisplayInfo();
+            Console.WriteLine("Shipping Cost:" + Shipping_Cost + " Discount:" + Discount + " final Price: " + CalculatePrice());
         }
     }
 }
