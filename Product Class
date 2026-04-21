@@ -1,4 +1,3 @@
-using App;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,95 +6,147 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace ConsoleApp2
-{   
+{
     public abstract class Product
     {
-        protected int ID;
-        protected string name;
-        protected float price;
-        public int quantity { get; set; }
-        public string Product_Description { get; set; }
+        protected int Id;
+        protected string Name;
+        protected double Price;
+        protected int Quantity;
+        protected string Product_Description;
         protected Product()
         {
-            ID = 0;
-            name = "null";
-            price = 0;
-            quantity = 0;
+            Id = 0;
+            Name = "null";
+            Price = 0;
+            Quantity = 0;
             Product_Description = "null";
         }
-        protected Product(int ID, string name, float Price, int quantity, string Product_Description)
+        protected Product(int Id, string name, double Price, int quantity, string Product_Description)
         {
-            if (ID >= 0)
-            {
-                this.ID = ID;
-            }
-            else
-            {
-                this.ID = 0;
-                Console.WriteLine("Error in ID number");
-            }
-            this.name = name;
-            if (Price >= 0)
-                this.price = Price;
-            else
-            {
-                this.price = 0;
-                Console.WriteLine("Price Can’t be in negative");
-            }
-            if (quantity >= 0)
-            {
-                this.quantity = quantity;
-            }
-            else
-            {
-                this.quantity = 0;
-                Console.WriteLine("Error in ID number");
-            }
-            this.Product_Description = Product_Description;
-        }
+            ID = Id;
+            NAME = name;
+            PRICE = Price;
+            QUANTITY = quantity;
+            PRODUCT_DESCRIPTION = Product_Description;
 
-        public abstract float CalculatePrice();
+
+        }
+        public int ID
+        {
+            set
+            {
+                if (value >= 0)
+                {
+                    this.Id = value;
+                }
+                else
+                {
+                    this.Id = 0;
+                    Console.WriteLine("Error in ID number");
+                }
+            }
+            get { return ID; }
+        }
+      
+        public string NAME
+        {
+            set { Name = value; }
+            get { return Name; }
+        }
+        public double PRICE
+        {
+            set
+            {
+                if (value >= 0)
+                    Price = value;
+                else
+                {
+                    Price = 0;
+                    Console.WriteLine("Price Can’t be in negative ");
+                }
+            }
+            get { return Price; }
+        }
+        public int QUANTITY
+        {
+            set
+            {
+                if (value >= 0)
+                {
+                    Quantity = value;
+                }
+                else
+                {
+                    Quantity = 0;
+                    Console.WriteLine("Error in ID number");
+                }
+            }
+            get { return Quantity; }
+        }
+        public string PRODUCT_DESCRIPTION
+        {
+            set { Product_Description = value; }
+            get { return Product_Description; }
+        }
+      
+        public abstract double CalculatePrice();
         public virtual void DisplayInfo()
         {
-            Console.WriteLine("ID: " + ID + " name:" + name + " Price:" + price);
+            Console.WriteLine("ID: " + Id + " name:" + Name + " Price:" + Price);
 
         }
     }
     //abstraction part (ship and discounts)
     public class Physical : Product
     {
-        private float Shipping_Cost;
-        private float Discount;
+        private double Shipping_Cost;
+        private double Discount;
         public Physical()
         {
             Shipping_Cost = 0;
             Discount = 0;
         }
-        public Physical(int ID, string name, float price, float Shipping_Cost, float Discount, int quantity, string Product_Description) : base(ID, name, price, quantity, Product_Description)
+        public Physical(int ID, string name, float price, int quantity, string Product_Description, double Shipping_Cost, double Discount) : base(ID, name, price, quantity, Product_Description)
         {
-            if (Shipping_Cost >= 0)
-                this.Shipping_Cost = Shipping_Cost;
-            else
-            {
-                Console.WriteLine("Error value");
-                Shipping_Cost = 0;
-            }
-            if (Discount >= 0)
-                this.Discount = Discount;
-            else
-            {
-                Console.WriteLine("error value");
-                Discount = 0;
-            }
-
+            SHIPPING_COST = Shipping_Cost;
+            DISCOUNT = Discount;
         }
-        public override float CalculatePrice()
+        public double SHIPPING_COST 
         {
-            return (price + Shipping_Cost) - Discount;
+            set
+            {
+                if (value >= 0)
+                    Shipping_Cost = value;
+                else
+                {
+                    Console.WriteLine("Error value");
+                    Shipping_Cost = 0;
+                }
+            }
+            get { return Shipping_Cost; }
+        }
+        public double DISCOUNT
+        {
+            set
+            {
+                if (value >= 0)
+                    Discount = value;
+                else
+                {
+                    Console.WriteLine("error value");
+                    Discount = 0;
+                }
+            }
+            get { return Discount; }
+            }
+        public override double CalculatePrice()
+        {
+            return (Price + Shipping_Cost) - Discount;
         }
         public override void DisplayInfo()
         {
-            base.DisplayInfo();
+            Console.Write("ID: " + Id + " name:" + Name + " Price:" + Price);
             Console.WriteLine("Shipping Cost:" + Shipping_Cost + " Discount:" + Discount + " final Price: " + CalculatePrice());
         }
     }
