@@ -6,89 +6,71 @@ namespace Project
         //Peter Part
         protected string Name;
         protected string Address;
-        protected int ID;
+        protected int Id;
         private static int CustomerCount = 0;
-        private long Phone;
+        private string Phone;
 
         public Customer()//constructor without parameters + Customer Counter
         {
             Name = "not null";
             Address = "Luxor";
-            ID = 500;
-            Phone = 100000000;
+            Id = 500;
+            Phone = "01000000000";
             CustomerCount++;
         }
-        public Customer (string Name , string Adrress ,int ID , long Phone)//constructor with parameters + CustomerCount
+        public Customer(string Name, string Adrress, int ID, string Phone)//constructor with parameters + CustomerCount
         {
-            this.Name = Name;
-            this.Address = Adrress;
-            if (ID > 0)
-                this.ID = ID;
-            else
-            {
-                ID = 500;
-                Console.WriteLine("Error ID input");
-            }
-            if (Phone >= 100000000)
-                this.Phone = Phone;
-            else
-            {
-                Console.WriteLine("Error Phone Number input");
-                Phone = 100000000;
-            }
+            NAME = Name;
+            ADDRESS= Adrress;
+            ID = Id;
+            PHONE = Phone;
             CustomerCount++;
         }
-        public void setName(string Name)//name Setter
+        public string NAME //Name property
         {
-            this.Name=Name;
+            set {  Name = value; }
+            get { return Name; }
         }
-        public void setAddress(string Address)//Address Setter
+        public string ADDRESS //Address property
         {
-            this.Address=Address;
+           set{ Address = value; }
+            get { return Address; }
         }
-        public void setId(int ID)//ID Setter
+        public int ID //id property
         {
-            if (ID > 0)
-                this.ID = ID;
-            else
-            {
-                ID = 500;
-                Console.WriteLine("Error ID input");
+            set {
+                if (value > 0)
+                    Id = value;
+                else
+                {
+                    Id = 500;
+                    Console.WriteLine("Error ID input " );
+                }
             }
+            get { return Id; }
         }
-        public void setNum(long Phone)//Phone NUM Setter
+      public string PHONE //Phone property
         {
-            if (Phone >= 100000000)
-                this.Phone = Phone;
-            else
+            set
             {
-                Console.WriteLine("Error Phone Number input");
-                Phone = 100000000;
+                if (Phone[0] == '0' && Phone[1] == '1' && (Phone[2] == '0' || Phone[2] == '1' || Phone[2] == '2' || Phone[2] == '5') && Phone.Length == 11)
+                    Phone = value;
+                else
+                {
+                    Console.WriteLine("Error Phone Number input");
+                    Phone = "01000000000";
+                }
             }
-        }
-        public string getName()//Name Getter 
-        {
-            return Name;
-        }
-        public string getAddress()//Address Getter
-        {
-            return Address;
-        }
-        public int getID()//ID Getter
-        {
-            return ID;
-        }
-        public int getCustomerCounter()//Customer Counter Getter
-        {
-            return CustomerCount;
-        }
-        public long getNUM()//Phone Number Getter
-        {
-            return Phone;
-        }
+            get { return Phone; }
+      }
         public void Display()//Customer Info
         {
-            Console.Write("Your Name is : " + Name + " And Your Address is : " + Address + " and Your ID is : "+ID+ " And your NUM is : "+ Phone);
+            Console.WriteLine("Your Info");
+            Console.WriteLine("Your Name is : " + Name + "Your Address is : " + Address + "Your ID is : " + ID + "Your Phone Number is : " + Phone);
+        }
+        public static void NumCustomer() // CustomerCount
+        {
+            Console.WriteLine("The Number of Customer is : " + CustomerCount);
         }
 
     }
