@@ -14,7 +14,7 @@ namespace ConsoleApp2
         protected double Price;
         protected int Quantity;
         protected string Product_Description;
-        protected Product()
+        protected Product()//constractor without parameter
         {
             Id = 0;
             Name = "null";
@@ -22,7 +22,7 @@ namespace ConsoleApp2
             Quantity = 0;
             Product_Description = "null";
         }
-        protected Product(int Id, string name, double Price, int quantity, string Product_Description)
+        protected Product(int Id, string name, double Price, int quantity, string Product_Description)//constractor with parameter
         {
             ID = Id;
             NAME = name;
@@ -32,7 +32,7 @@ namespace ConsoleApp2
 
 
         }
-        public int ID
+        public int ID //property for ID
         {
             set
             {
@@ -48,13 +48,13 @@ namespace ConsoleApp2
             }
             get { return ID; }
         }
-      
-        public string NAME
+
+        public string NAME //property for NAME
         {
             set { Name = value; }
             get { return Name; }
         }
-        public double PRICE
+        public double PRICE //property for PRICE
         {
             set
             {
@@ -68,7 +68,7 @@ namespace ConsoleApp2
             }
             get { return Price; }
         }
-        public int QUANTITY
+        public int QUANTITY //prpoerty for QUANTITY
         {
             set
             {
@@ -84,13 +84,13 @@ namespace ConsoleApp2
             }
             get { return Quantity; }
         }
-        public string PRODUCT_DESCRIPTION
+        public string PRODUCT_DESCRIPTION //property for Descritption
         {
             set { Product_Description = value; }
             get { return Product_Description; }
         }
-      
-        public abstract double CalculatePrice();
+
+        public abstract double CalculatePrice();//abstract method
         public virtual void DisplayInfo()
         {
             Console.WriteLine("ID: " + Id + " name:" + Name + " Price:" + Price);
@@ -102,17 +102,17 @@ namespace ConsoleApp2
     {
         private double Shipping_Cost;
         private double Discount;
-        public Physical()
+        public Physical()//constractor without parameter
         {
             Shipping_Cost = 0;
             Discount = 0;
         }
-        public Physical(int ID, string name, float price, int quantity, string Product_Description, double Shipping_Cost, double Discount) : base(ID, name, price, quantity, Product_Description)
+        public Physical(int ID, string name, float price, int quantity, string Product_Description, double Shipping_Cost, double Discount) : base(ID, name, price, quantity, Product_Description)//constractor with parameter + base from product
         {
             SHIPPING_COST = Shipping_Cost;
             DISCOUNT = Discount;
         }
-        public double SHIPPING_COST 
+        public double SHIPPING_COST//property for SHIPPING_COST
         {
             set
             {
@@ -126,7 +126,7 @@ namespace ConsoleApp2
             }
             get { return Shipping_Cost; }
         }
-        public double DISCOUNT
+        public double DISCOUNT//property for DISCOUNT
         {
             set
             {
@@ -139,15 +139,15 @@ namespace ConsoleApp2
                 }
             }
             get { return Discount; }
-            }
-        public override double CalculatePrice()
+        }
+        public override double CalculatePrice()//override method
         {
             return (Price + Shipping_Cost) - Discount;
         }
-        public override void DisplayInfo()
+        public override void DisplayInfo()//override method(display)
         {
             Console.Write("ID: " + Id + " name:" + Name + " Price:" + Price);
             Console.WriteLine("Shipping Cost:" + Shipping_Cost + " Discount:" + Discount + " final Price: " + CalculatePrice());
         }
     }
-}
+}   
