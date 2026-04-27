@@ -1,0 +1,124 @@
+using System;
+
+namespace Project
+{
+    public abstract class Payment
+    {
+        protected double Amount;
+
+        public Payment()
+        {
+            Amount = 0;
+        }
+
+        public Payment(double amount)
+        {
+            AMOUNT = amount;
+        }
+
+        public double AMOUNT
+        {
+            set
+            {
+                if (value >= 0)
+                    Amount = value;
+                else
+                {
+                    Amount = 0;
+                    Console.WriteLine("Error: Amount must be positive.");
+                }
+            }
+            get { return Amount; }
+        }
+
+        public abstract void ProcessPayment();
+
+        public virtual void Display()
+        {
+            Console.WriteLine("Payment Amount: " + Amount);
+        }
+    }
+
+    public class CreditCardPayment : Payment
+    {
+        private int[] CardNumber; // Array of digits
+
+        public CreditCardPayment() : base()
+        {
+            CardNumber = new int[16];
+            for (int i = 0; i < CardNumber.Length; i++)
+                CardNumber[i] = 0;
+        }
+
+        public CreditCardPayment(double amount, int[] cardNumber) : base(amount)
+        {
+            CARDNUMBER = cardNumber;
+        }
+
+        public int[] CARDNUMBER
+        {
+            set
+            {
+                if (value != null && value.Length == 16)
+                    CardNumber = value;
+                else
+                {
+                    CardNumber = new int[16];
+                    Console.WriteLine("Error: Card number must be 16 digits.");
+                }
+            }
+            get { return CardNumber; }
+        }
+
+        public override void ProcessPayment()
+        {
+            Console.WriteLine("Processing Credit Card Payment...");
+            Console.Write("Amount: " + Amount + " Card Number: ");
+            foreach (int digit in CardNumber)
+                Console.Write(digit);
+            Console.WriteLine();
+        }
+
+        public override void Display()
+        {
+            base.Display();
+            Console.Write("Card Number: ");
+            foreach (int digit in CardNumber)
+                Console.Write(digit);
+            Console.WriteLine();
+        }
+    }
+
+    public class CashOnDelivery : Payment
+    {
+        private string DeliveryAddress;
+
+        public CashOnDelivery() : base()
+        {
+            DeliveryAddress = "Unknown";
+        }
+
+        public CashOnDelivery(double amount, string deliveryAddress) : base(amount)
+        {
+            DELIVERYADDRESS = deliveryAddress;
+        }
+
+        public string DELIVERYADDRESS
+        {
+            set { DeliveryAddress = value; }
+            get { return DeliveryAddress; }
+        }
+
+        public override void ProcessPayment()
+        {
+            Console.WriteLine("Processing Cash on Delivery...");
+            Console.WriteLine("Amount: " + Amount + " Delivery Address: " + DeliveryAddress);
+        }
+
+        public override void Display()
+        {
+            base.Display();
+            Console.WriteLine("Delivery Address: " + DeliveryAddress);
+        }
+    }
+}
