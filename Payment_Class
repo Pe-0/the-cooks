@@ -41,18 +41,32 @@ namespace Project
 
     public class CreditCardPayment : Payment
     {
-        private int[] CardNumber; // Array of digits
+        private int[] CardNumber;
+        private double Balance; // default balance in the card
 
         public CreditCardPayment() : base()
         {
             CardNumber = new int[16];
             for (int i = 0; i < CardNumber.Length; i++)
                 CardNumber[i] = 0;
+
+            Balance = 1000; // default balance
         }
 
         public CreditCardPayment(double amount, int[] cardNumber) : base(amount)
         {
             CARDNUMBER = cardNumber;
+            Balance = 1000; // default balance
+
+            if (Balance >= amount)
+            {
+                Balance -= amount;
+                Console.WriteLine("Payment successful. Remaining balance: " + Balance);
+            }
+            else
+            {
+                Console.WriteLine("Error: Insufficient funds.");
+            }
         }
 
         public int[] CARDNUMBER
@@ -86,6 +100,7 @@ namespace Project
             foreach (int digit in CardNumber)
                 Console.Write(digit);
             Console.WriteLine();
+            Console.WriteLine("Balance: " + Balance);
         }
     }
 
