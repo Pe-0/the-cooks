@@ -8,7 +8,7 @@ namespace Project
         protected string Address;
         protected int Id;
         private static int CustomerCount = 0;
-        private string Phone;
+        protected string Phone;
 
         public Customer()//constructor without parameters + Customer Counter
         {
@@ -18,10 +18,10 @@ namespace Project
             Phone = "01000000000";
             CustomerCount++;
         }
-        public Customer(string Name, string Adrress, int ID, string Phone)//constructor with parameters + CustomerCount
+        public Customer(string Name, string Addrress, int Id, string Phone)//constructor with parameters + CustomerCount
         {
             NAME = Name;
-            ADDRESS= Adrress;
+            ADDRESS= Addrress;
             ID = Id;
             PHONE = Phone;
             CustomerCount++;
@@ -53,7 +53,7 @@ namespace Project
         {
             set
             {
-                if (Phone[0] == '0' && Phone[1] == '1' && (Phone[2] == '0' || Phone[2] == '1' || Phone[2] == '2' || Phone[2] == '5') && Phone.Length == 11)
+                if (value[0] == '0' && value[1] == '1' && (value[2] == '0' || value[2] == '1' || value[2] == '2' || value[2] == '5') && value.Length == 11)
                     Phone = value;
                 else
                 {
@@ -63,10 +63,10 @@ namespace Project
             }
             get { return Phone; }
       }
-        public void Display()//Customer Info
+        public virtual void  Display()//Customer Info
         {
             Console.WriteLine("Your Info");
-            Console.WriteLine("Your Name is : " + Name + "Your Address is : " + Address + "Your ID is : " + ID + "Your Phone Number is : " + Phone);
+            Console.WriteLine("Your Name is : " + Name + "  Your Address is : " + Address + "   Your ID is : " + ID + "   Your Phone Number is : " + Phone);
         }
         public static void NumCustomer() // CustomerCount
         {
