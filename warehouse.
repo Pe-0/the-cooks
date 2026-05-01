@@ -1,0 +1,74 @@
+using System;
+
+namespace Project
+{
+   
+        public class Warehouse
+        {
+
+            Product phone;
+            Product pc;
+            Product laptop;
+
+            private int countPhone=0;
+            private int countPc=0;
+            private int countLaptop=0;
+
+            public Warehouse()
+            {
+                phone = new Product();
+                pc = new Product();
+                laptop = new Product();
+
+                countPhone = 0;
+                countPc = 0;
+                countLaptop = 0;
+            }
+
+            public void IncrementPhone()
+            {
+                countPhone++;
+                Console.WriteLine("Phone = " + countPhone);
+            }
+
+            public void DecrementPhone()
+            {
+                if (countPhone > 0)
+                {
+                    countPhone--;
+                    Console.WriteLine("Phone = " + countPhone);
+                }
+            }
+
+            public void IncrementPc()
+            {
+                countPc++;
+                Console.WriteLine("PC = " + countPc);
+            }
+
+            public void DecrementPc()
+            {
+                if (countPc > 0)
+                {
+                    countPc--;
+                    Console.WriteLine("PC = " + countPc);
+                }
+            }
+
+            public void IncrementLaptop()
+            {
+                countLaptop++;
+                Console.WriteLine("Laptop = " + countLaptop);
+            }
+
+            public void DecrementLaptop()
+            {
+                if (countLaptop > 0)
+                {
+                    countLaptop--;
+                    Console.WriteLine("Laptop = " + countLaptop);
+                }
+            }
+        }
+  
+}
