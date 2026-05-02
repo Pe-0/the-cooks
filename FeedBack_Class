@@ -1,0 +1,55 @@
+Feedback
+using System;
+
+namespace Project
+{
+    public abstract class Feedback
+    {
+        protected int FeedbackId;
+        protected string CustomerName;
+        protected string Comment;
+        protected int Rating; // 1-5
+
+        public Feedback(int id, string customerName, string comment, int rating)
+        {
+            FeedbackId = id;
+            CustomerName = customerName;
+            Comment = comment;
+            Rating = (rating >= 1 && rating <= 5) ? rating : 1;
+        }
+
+        public abstract void Display(); // Abstract Method
+    }
+
+    public class ProductFeedback : Feedback
+    {
+        private int ProductId;
+
+        public ProductFeedback(int id, string customerName, string comment, int rating, int productId)
+            : base(id, customerName, comment, rating)
+        {
+            ProductId = productId;
+        }
+
+        public override void Display()
+        {
+            Console.WriteLine($"[Product Feedback] ID:{FeedbackId} Customer:{CustomerName} Product:{ProductId} Rating:{Rating}/5 Comment:{Comment}");
+        }
+    }
+
+    public class ServiceFeedback : Feedback
+    {
+        private string ServiceName;
+
+        public ServiceFeedback(int id, string customerName, string comment, int rating, string serviceName)
+            : base(id, customerName, comment, rating)
+        {
+            ServiceName = serviceName;
+        }
+
+        public override void Display()
+        {
+            Console.WriteLine($"[Service Feedback] ID:{FeedbackId} Customer:{CustomerName} Service:{ServiceName} Rating:{Rating}/5 Comment:{Comment}");
+        }
+    }
+}
