@@ -2,65 +2,68 @@ using System;
 
 namespace Project
 {
-    public abstract class Payment
+    public class Payment
     {
         protected double Amount;
+        protected Product product;
 
         public Payment()
         {
             Amount = 0;
+            product = null;
         }
 
-        public Payment(double amount)
+        public Payment(Product p)
         {
-            AMOUNT = amount;
+            product = p;
+            Amount = p.PRICE;
         }
-
-        public double AMOUNT
-        {
-            set
-            {
-                if (value >= 0)
-                    Amount = value;
-                else
-                {
-                    Amount = 0;
-                    Console.WriteLine("Error: Amount must be positive.");
-                }
-            }
-            get { return Amount; }
-        }
-
-        public abstract void ProcessPayment();
 
         public virtual void Display()
         {
             Console.WriteLine("Payment Amount: " + Amount);
         }
+
+        public void DeliveryInfo(string address)
+        {
+            Console.WriteLine("Delivery Address: " + address);
+        }
+
+        public virtual void ProcessPayment()
+        {
+            Console.WriteLine("Processing Payment...");
+        }
     }
 
     public class CreditCardPayment : Payment
     {
-        private int[] CardNumber;
-        private double Balance; // default balance in the card
+        private string[] CardNumber;
+        private double Balance;
 
         public CreditCardPayment() : base()
         {
-            CardNumber = new int[16];
-            for (int i = 0; i < CardNumber.Length; i++)
-                CardNumber[i] = 0;
+            CardNumber = new string[16];
+            for (int i = 0; i < 16; i++)
+                CardNumber[i] = "0";
 
-            Balance = 1000; // default balance
+            Balance = 1000;
         }
 
-        public CreditCardPayment(double amount, int[] cardNumber) : base(amount)
+        public CreditCardPayment(Product p, string[] card) : base(p)
         {
-            CARDNUMBER = cardNumber;
-            Balance = 1000; // default balance
-
-            if (Balance >= amount)
+            if (card != null && card.Length == 16)
+                CardNumber = card;
+            else
             {
-                Balance -= amount;
+                CardNumber = new string[16];
+                Console.WriteLine("Error: Card number must be 16 digits.");
+            }
+
+            Balance = 1000;
+
+            if (Balance >= Amount)
+            {
+                Balance -= Amount;
                 Console.WriteLine("Payment successful. Remaining balance: " + Balance);
             }
             else
@@ -69,36 +72,24 @@ namespace Project
             }
         }
 
-        public int[] CARDNUMBER
-        {
-            set
-            {
-                if (value != null && value.Length == 16)
-                    CardNumber = value;
-                else
-                {
-                    CardNumber = new int[16];
-                    Console.WriteLine("Error: Card number must be 16 digits.");
-                }
-            }
-            get { return CardNumber; }
-        }
-
         public override void ProcessPayment()
         {
-            Console.WriteLine("Processing Credit Card Payment...");
-            Console.Write("Amount: " + Amount + " Card Number: ");
-            foreach (int digit in CardNumber)
-                Console.Write(digit);
+            Console.Write("Card Number: ");
+            for (int i = 0; i < CardNumber.Length; i++)
+                Console.Write(CardNumber[i]);
+
             Console.WriteLine();
+            Console.WriteLine("Amount: " + Amount);
         }
 
         public override void Display()
         {
             base.Display();
+
             Console.Write("Card Number: ");
-            foreach (int digit in CardNumber)
-                Console.Write(digit);
+            for (int i = 0; i < CardNumber.Length; i++)
+                Console.Write(CardNumber[i]);
+
             Console.WriteLine();
             Console.WriteLine("Balance: " + Balance);
         }
@@ -106,34 +97,29 @@ namespace Project
 
     public class CashOnDelivery : Payment
     {
-        private string DeliveryAddress;
+        private string Address;
 
         public CashOnDelivery() : base()
         {
-            DeliveryAddress = "Unknown";
+            Address = "Unknown";
         }
 
-        public CashOnDelivery(double amount, string deliveryAddress) : base(amount)
+        public CashOnDelivery(Product p, string address) : base(p)
         {
-            DELIVERYADDRESS = deliveryAddress;
-        }
-
-        public string DELIVERYADDRESS
-        {
-            set { DeliveryAddress = value; }
-            get { return DeliveryAddress; }
+            Address = address;
         }
 
         public override void ProcessPayment()
         {
-            Console.WriteLine("Processing Cash on Delivery...");
-            Console.WriteLine("Amount: " + Amount + " Delivery Address: " + DeliveryAddress);
+            Console.WriteLine("Cash on Delivery");
+            Console.WriteLine("Amount: " + Amount);
+            Console.WriteLine("Address: " + Address);
         }
 
         public override void Display()
         {
             base.Display();
-            Console.WriteLine("Delivery Address: " + DeliveryAddress);
+            Console.WriteLine("Address: " + Address);
         }
     }
 }
