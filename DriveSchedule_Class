@@ -1,0 +1,78 @@
+Drive Scheduling System
+using System;
+
+namespace Project
+{
+    public class DriveSchedule
+    {
+        protected int ScheduleId;
+        protected string DriverName;
+        protected DateTime StartTime;
+        protected DateTime EndTime;
+        protected double BaseFare;
+
+        public DriveSchedule(int id, string driverName, DateTime start, DateTime end, double baseFare)
+        {
+            ScheduleId = id;
+            DriverName = driverName;
+            StartTime = start;
+            EndTime = end;
+            BaseFare = baseFare;
+        }
+
+        public virtual double CalculateCost()
+        {
+            TimeSpan duration = EndTime - StartTime;
+            return BaseFare + duration.TotalHours * 50; // Default rate
+        }
+
+        public virtual void Display()
+        {
+            Console.WriteLine($"Schedule ID:{ScheduleId} Driver:{DriverName} Start:{StartTime} End:{EndTime} Cost:{CalculateCost()}");
+        }
+    }
+
+    public class DeliverySchedule : DriveSchedule
+    {
+        private double PackageWeight;
+
+        public DeliverySchedule(int id, string driverName, DateTime start, DateTime end, double baseFare, double weight)
+            : base(id, driverName, start, end, baseFare)
+        {
+            PackageWeight = weight;
+        }
+
+        public override double CalculateCost()
+        {
+            return base.CalculateCost() + (PackageWeight * 10); // Extra cost per kg
+        }
+
+        public override void Display()
+        {
+            base.Display();
+            Console.WriteLine($"Delivery Weight: {PackageWeight} kg");
+        }
+    }
+
+    public class CustomerPickup : DriveSchedule
+    {
+        private string PickupLocation;
+
+        public CustomerPickup(int id, string driverName, DateTime start, DateTime end, double baseFare, string location)
+            : base(id, driverName, start, end, baseFare)
+        {
+            PickupLocation = location;
+        }
+
+        public override double CalculateCost()
+        {
+            return base.CalculateCost() + 100; // Fixed pickup fee
+        }
+
+        public override void Display()
+        {
+            base.Display();
+            Console.WriteLine($"Pickup Location: {PickupLocation}");
+        }
+    }
+}
