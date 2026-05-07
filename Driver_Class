@@ -2,90 +2,107 @@ using System;
 
 namespace Project
 {
-    // Feedback يرث من Driver
-    public abstract class Feedback : Driver
+    public class Driver
     {
-        protected int FeedbackId;
-        protected string Comment;
-        protected int Rating; // 1-5
+        protected int Id;
+        protected string Name;
+        protected string Region;
+        protected Warehouse warehouse;
+        protected Order currentOrder;
 
-        public Feedback() : base()
+        public Driver()
         {
-            FeedbackId = 0;
-            Comment = "No Comment";
-            Rating = 1;
+            Id = 0;
+            Name = "No Name";
+            Region = "Unknown";
+            warehouse = null;
+            currentOrder = null;
         }
 
-        public Feedback(int feedbackId, string comment, int rating, int driverId, string driverName, string region, Warehouse w)
-            : base(driverId, driverName, region, w)
+        public Driver(int id, string name, string region, Warehouse w)
         {
-            FeedbackId = feedbackId;
-            Comment = comment;
-            Rating = (rating >= 1 && rating <= 5) ? rating : 1;
+            ID = id;
+            NAME = name;
+            REGION = region;
+            warehouse = w;
+            currentOrder = null;
         }
 
-        public int FEEDBACKID
-        {
-            set { FeedbackId = value; }
-            get { return FeedbackId; }
-        }
-
-        public string COMMENT
-        {
-            set { Comment = value; }
-            get { return Comment; }
-        }
-
-        public int RATING
+        public int ID
         {
             set
             {
-                if (value >= 1 && value <= 5)
-                    Rating = value;
+                if (value >= 0)
+                    Id = value;
                 else
                 {
-                    Rating = 1;
-                    Console.WriteLine("Error: Rating must be between 1 and 5.");
+                    Id = 0;
+                    Console.WriteLine("Error in Driver ID");
                 }
             }
-            get { return Rating; }
+            get { return Id; }
         }
 
-     
-        public abstract void DisplayFeedback();
-    }
-
-    // Feedback خاص بالمنتجات
-    public class ProductFeedback : Feedback
-    {
-        private int ProductId;
-
-        public ProductFeedback(int feedbackId, string comment, int rating, int driverId, string driverName, string region, Warehouse w, int productId)
-            : base(feedbackId, comment, rating, driverId, driverName, region, w)
+        public string NAME
         {
-            ProductId = productId;
+            set { Name = value; }
+            get { return Name; }
         }
 
-        public override void DisplayFeedback()
+        public string REGION
         {
-            Console.WriteLine($"[Product Feedback] FeedbackID:{FeedbackId} Driver:{NAME} Region:{REGION} ProductID:{ProductId} Rating:{Rating}/5 Comment:{Comment}");
-        }
-    }
-
-    // Feedback خاص بالخدمات
-    public class ServiceFeedback : Feedback
-    {
-        private string ServiceName;
-
-        public ServiceFeedback(int feedbackId, string comment, int rating, int driverId, string driverName, string region, Warehouse w, string serviceName)
-            : base(feedbackId, comment, rating, driverId, driverName, region, w)
-        {
-            ServiceName = serviceName;
+            set { Region = value; }
+            get { return Region; }
         }
 
-        public override void DisplayFeedback()
+        public void AssignWarehouse(Warehouse w)
         {
-            Console.WriteLine($"[Service Feedback] FeedbackID:{FeedbackId} Driver:{NAME} Region:{REGION} Service:{ServiceName} Rating:{Rating}/5 Comment:{Comment}");
+            warehouse = w;
+        }
+
+        public void DeliverOrder(Order o, string productType)
+        {
+            if (o == null)
+            {
+                Console.WriteLine("No order to deliver.");
+                return;
+            }
+
+            if (warehouse == null)
+            {
+                Console.WriteLine("No warehouse assigned to driver.");
+                return;
+            }
+
+            currentOrder = o;
+
+            Console.WriteLine("Driver " + Name + " is delivering order for customer: " + o.NAME);
+            Console.WriteLine("Region: " + o.REGION);
+
+            if (productType == "phone")
+            {
+                warehouse.DecrementPhone();
+            }
+            else if (productType == "pc")
+            {
+                warehouse.DecrementPc();
+            }
+            else if (productType == "laptop")
+            {
+                warehouse.DecrementLaptop();
+            }
+            else
+            {
+                Console.WriteLine("Unknown product type.");
+            }
+
+            Console.WriteLine("Final price of order: " + o.CalculateTotal(o.PRICEP, o.SHIPPING_COST, o.DISCOUNT));
+        }
+
+        public void Display()
+        {
+            Console.WriteLine("Driver Info");
+            Console.WriteLine("ID: " + Id + " Name: " + Name + " Region: " + Region);
         }
     }
 }
