@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Project
+namespace ConsoleApp5
 {
-    public  class Product
+    public class Product : IProduct
     {
         protected int Id;
         protected string Name;
@@ -72,11 +72,58 @@ namespace Project
             set { Product_Description = value; }
             get { return Product_Description; }
         }
+        public void SaveToFile(string filePath)
+        {
+            StreamWriter writer = new StreamWriter(filePath, true);
+            writer.WriteLine(Id);
+            writer.WriteLine(Name);
+            writer.WriteLine(Price);
+            writer.WriteLine(Product_Description);
+            writer.WriteLine();
+            writer.Close();
+        }
+
+        public void DisplayAllFromFile(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                Console.WriteLine("No product data found");
+                return;
+            }
+
+            StreamReader reader = new StreamReader(filePath);
+
+            while (!reader.EndOfStream)
+            {
+                string id = reader.ReadLine();
+
+                if (id == "")
+                    continue;
+
+                string name = reader.ReadLine();
+                string price = reader.ReadLine();
+                string productDescription = reader.ReadLine();
+
+                Console.WriteLine("ID: " + id + " Name: " + name + " Price: " + price + " Product Description: " + productDescription);
+            }
+
+            reader.Close();
+        }
+
+        public void LoadFromFile(string filePath)
+        {
+            StreamReader reader = new StreamReader(filePath);
+            ID = int.Parse(reader.ReadLine());
+            NAME = reader.ReadLine();
+            PRICE = double.Parse(reader.ReadLine());
+            PRODUCT_DESCRIPTION = reader.ReadLine();
+            reader.Close();
+        }
 
 
         public virtual void DisplayInfo()
         {
-            Console.WriteLine("ID: " + Id + " name:" + Name + " Price:" + Price);
+            Console.WriteLine("\n"+"ID: " + Id + " name:" + Name + " Product Discreption is: " + Product_Description + " Price:" + Price );
 
         }
     }
