@@ -2,38 +2,31 @@ using System;
 
 namespace Project
 {
-    // Feedback يرث من Driver
-    public abstract class Feedback : Driver
+
+    public abstract class Feedback <T>
     {
-        protected int FeedbackId;
-        protected string Comment;
-        protected int Rating; // 1-5
+       
+        protected Customer customer;
+        protected T Comment;
+        protected int Rating; 
 
-        public Feedback() : base()
+        public Feedback()
         {
-            FeedbackId = 0;
-            Comment = "No Comment";
+            customer = new Customer();
+            Comment = default;
             Rating = 1;
+
         }
 
-        public Feedback(int feedbackId, string comment, int rating, int driverId, string driverName, string region, Warehouse w)
-            : base(driverId, driverName, region, w)
+        public Feedback(Customer cust, T comment, int rating)
         {
-            FeedbackId = feedbackId;
-            Comment = comment;
-            Rating = (rating >= 1 && rating <= 5) ? rating : 1;
-        }
 
-        public int FEEDBACKID
-        {
-            set { FeedbackId = value; }
-            get { return FeedbackId; }
-        }
+            customer.NAME = cust.NAME;
+            customer.PHONE = cust.PHONE;
+            customer.ADDRESS = cust.ADDRESS;
+            COMMENT = comment;
+            RATING = rating;
 
-        public string COMMENT
-        {
-            set { Comment = value; }
-            get { return Comment; }
         }
 
         public int RATING
@@ -41,51 +34,57 @@ namespace Project
             set
             {
                 if (value >= 1 && value <= 5)
+                {
                     Rating = value;
+                }
+
                 else
                 {
-                    Rating = 1;
-                    Console.WriteLine("Error: Rating must be between 1 and 5.");
+                    Rating = 5;
+                    Console.WriteLine("invalid number ");
                 }
             }
             get { return Rating; }
-        }
 
-     
-        public abstract void DisplayFeedback();
+        }
+        public T COMMENT
+        {
+            set { Comment = value; }
+            
+            get { return Comment; }
+
+        }
+        public abstract void Display(); 
     }
 
-    // Feedback خاص بالمنتجات
-    public class ProductFeedback : Feedback
+    public class ProductFeedback <T>: Feedback<T>
     {
-        private int ProductId;
+        private Product product;
 
-        public ProductFeedback(int feedbackId, string comment, int rating, int driverId, string driverName, string region, Warehouse w, int productId)
-            : base(feedbackId, comment, rating, driverId, driverName, region, w)
+        public ProductFeedback()
         {
-            ProductId = productId;
+            product = new Product();
+            customer= new Customer();
+            COMMENT = default;
+            RATING= 1;
         }
 
-        public override void DisplayFeedback()
+        public ProductFeedback(Customer cust, T comment, int rating, Product pro)
+            : base(cust, comment, rating)
         {
-            Console.WriteLine($"[Product Feedback] FeedbackID:{FeedbackId} Driver:{NAME} Region:{REGION} ProductID:{ProductId} Rating:{Rating}/5 Comment:{Comment}");
+
+            product.ID = pro.ID;
+            product.NAME = pro.NAME;
+            product.PRICE = pro.PRICE;
+
         }
+
+        public override void Display()
+        {
+            Console.WriteLine("Tour Name : "+customer.NAME+"\nThe Product : "+product.NAME+"\nYour Rating : "+RATING+"\nYour comment : "+COMMENT);
+        }
+
     }
 
-    // Feedback خاص بالخدمات
-    public class ServiceFeedback : Feedback
-    {
-        private string ServiceName;
 
-        public ServiceFeedback(int feedbackId, string comment, int rating, int driverId, string driverName, string region, Warehouse w, string serviceName)
-            : base(feedbackId, comment, rating, driverId, driverName, region, w)
-        {
-            ServiceName = serviceName;
-        }
-
-        public override void DisplayFeedback()
-        {
-            Console.WriteLine($"[Service Feedback] FeedbackID:{FeedbackId} Driver:{NAME} Region:{REGION} Service:{ServiceName} Rating:{Rating}/5 Comment:{Comment}");
-        }
-    }
 }
