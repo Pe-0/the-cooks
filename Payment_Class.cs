@@ -2,124 +2,94 @@ using System;
 
 namespace Project
 {
-    public class Payment
+    public abstract class Payment :Order
     {
         protected double Amount;
-        protected Product product;
+       
 
         public Payment()
         {
             Amount = 0;
-            product = null;
+            
         }
 
-        public Payment(Product p)
+        public Payment(Customer cust, Product pro, double shippingCost, double discount) :base(cust,  pro,  shippingCost, discount)
         {
-            product = p;
-            Amount = p.PRICE;
+            Amount = CalculateTotal(shippingCost, discount);
         }
 
-        public virtual void Display()
-        {
-            Console.WriteLine("Payment Amount: " + Amount);
-        }
-
-        public void DeliveryInfo(string address)
-        {
-            Console.WriteLine("Delivery Address: " + address);
-        }
-
-        public virtual void ProcessPayment()
-        {
-            Console.WriteLine("Processing Payment...");
-        }
     }
 
     public class CreditCardPayment : Payment
     {
-        private string[] CardNumber;
+        private string CardNumber;
         private double Balance;
+        
 
         public CreditCardPayment() : base()
         {
-            CardNumber = new string[16];
-            for (int i = 0; i < 16; i++)
-                CardNumber[i] = "0";
-
-            Balance = 1000;
+            CardNumber = "0000000000000000";
+            Balance = 100000;
         }
 
-        public CreditCardPayment(Product p, string[] card) : base(p)
+        public CreditCardPayment(Customer cust, Product pro, double shippingCost, double discount,string card) :base( cust,  pro,  shippingCost, discount)
         {
-            if (card != null && card.Length == 16)
+            if ( card.Length == 16)
                 CardNumber = card;
             else
             {
-                CardNumber = new string[16];
+                CardNumber = "0000000000000000";
                 Console.WriteLine("Error: Card number must be 16 digits.");
             }
-
-            Balance = 1000;
+           
+            Balance = 100000;
 
             if (Balance >= Amount)
             {
+                
+
                 Balance -= Amount;
-                Console.WriteLine("Payment successful. Remaining balance: " + Balance);
+                Console.WriteLine("Payment successful. Remaining balance: " + Balance+"\nWe will contact you soon....");
             }
             else
             {
+                
                 Console.WriteLine("Error: Insufficient funds.");
             }
         }
+      
 
-        public override void ProcessPayment()
-        {
-            Console.Write("Card Number: ");
-            for (int i = 0; i < CardNumber.Length; i++)
-                Console.Write(CardNumber[i]);
-
-            Console.WriteLine();
-            Console.WriteLine("Amount: " + Amount);
-        }
-
-        public override void Display()
-        {
-            base.Display();
-
-            Console.Write("Card Number: ");
-            for (int i = 0; i < CardNumber.Length; i++)
-                Console.Write(CardNumber[i]);
-
-            Console.WriteLine();
-            Console.WriteLine("Balance: " + Balance);
-        }
     }
 
     public class CashOnDelivery : Payment
     {
         private string Address;
-
+        private double Balance;
         public CashOnDelivery() : base()
         {
             Address = "Unknown";
         }
 
-        public CashOnDelivery(Product p, string address) : base(p)
+        public CashOnDelivery(Customer cust, Product pro, double shippingCost, double discount) : base(cust, pro, shippingCost, discount)
         {
-            Address = address;
+            Address = customer.ADDRESS;
+            Balance = 100000;
+
+            if (Balance >= Amount)
+            {
+
+
+                Balance -= Amount;
+                Console.WriteLine("Payment successful. Remaining balance: " + Balance + "\nWe will contact you soon....");
+            }
+            else
+            {
+
+                Console.WriteLine("Error: Insufficient funds.");
+            }
         }
 
-        public override void ProcessPayment()
-        {
-            Console.WriteLine("Cash on Delivery");
-            Console.WriteLine("Amount: " + Amount);
-            Console.WriteLine("Address: " + Address);
-        }
 
-        public override void Display()
-        {
-            base.Display();
-            Console.WriteLine("Address: " + Address);
-        }
+       
     }
 }
