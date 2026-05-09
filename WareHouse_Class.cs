@@ -5,23 +5,23 @@ namespace Project
 {
     public class Warehouse
     {
-        private static int countPhone ;
-        private static int countPc ;
-        private static int countLaptop ;
-       
+        private static int countPhone;
+        private static int countPc;
+        private static int countLaptop;
+
         public Warehouse()
         {
-            countLaptop = 50 ;
-            countPhone = 50 ;
-            countPc = 50 ;
+            countLaptop = 50;
+            countPhone = 50;
+            countPc = 50;
         }
-       
+
 
         public void IncrementPhone()
         {
             countPhone++;
-          
-          
+
+
         }
 
         public void DecrementPhone()
@@ -29,8 +29,8 @@ namespace Project
             if (countPhone > 0)
             {
                 countPhone--;
-              
-               
+
+
             }
             else
             {
@@ -41,8 +41,8 @@ namespace Project
         public void IncrementPc()
         {
             countPc++;
-          
-           
+
+
         }
 
         public void DecrementPc()
@@ -50,8 +50,8 @@ namespace Project
             if (countPc > 0)
             {
                 countPc--;
-              
-             
+
+
             }
             else
             {
@@ -62,7 +62,7 @@ namespace Project
         public void IncrementLaptop()
         {
             countLaptop++;
-           
+
         }
 
         public void DecrementLaptop()
@@ -70,8 +70,8 @@ namespace Project
             if (countLaptop > 0)
             {
                 countLaptop--;
-             
-               
+
+
             }
             else
             {
@@ -79,12 +79,12 @@ namespace Project
             }
         }
 
-      
+
         public void DisplayStockPc()
         {
-            
+
             Console.WriteLine("PC: " + countPc);
-           
+
         }
         public void DisplayStockLaptop()
         {
