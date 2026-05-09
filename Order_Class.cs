@@ -3,73 +3,34 @@ using System.Diagnostics;
 
 namespace Project
 {
-    public class Order : Customer
+    public class Order
     {
-        protected int IdP;
-        protected string NameP;
-        protected double PriceP;
+        protected Customer customer;
+        protected Product product;
         protected double Discount;
-        private double ShippingCost;
-        private string Region;
+        protected double ShippingCost;
+        
 
         public Order()
         {
-            IdP = 0;
-            NameP = "none";
-            PriceP = 0;
+            product = new Product();
             Discount = 0;
             ShippingCost = 0;
-            Region = "Unknown";
+            customer =new Customer();
 
         }
 
-        public Order(string name, string address, int id, string phone ,string region,int idp,string namep,double pricep, double shippingCost, double discount)
-            : base(name, address, id, phone)
+        public Order(Customer cust ,Product pro, double shippingCost, double discount)
         {
-            IDP = idp;
-            NAMEP = namep;
-            PRICEP = pricep;
+            product.ID = pro.ID;
+            product.NAME = pro.NAME;
+            product.PRICE = pro.PRICE;
             DISCOUNT = discount;
             SHIPPING_COST = shippingCost;
-            REGION = region;
-        }
-
-
-        public int IDP
-        {
-            set
-            {
-                if (value >= 0)
-                {
-                    this.IdP = value;
-                }
-                else
-                {
-                    this.IdP = 0;
-                    Console.WriteLine("Error in ID number");
-                }
-            }
-            get { return IdP; }
-        }
-
-        public string NAMEP
-        {
-            set { NameP = value; }
-            get { return NameP; }
-        }
-        public double PRICEP
-        {
-            set
-            {
-                if (value >= 0)
-                    PriceP = value;
-                else
-                {
-                    PriceP = 0;
-                    Console.WriteLine("Price Can’t be in negative ");
-                }
-            }
-            get { return PriceP; }
+            customer.ID = cust.ID;
+            customer.NAME = cust.NAME;
+            customer.PHONE = cust.PHONE;
+            customer.ADDRESS = cust.ADDRESS;
         }
 
         public double SHIPPING_COST
@@ -86,37 +47,37 @@ namespace Project
             }
             get { return ShippingCost; }
         }
+
         public double DISCOUNT
         {
-            set 
+
+            set
             {
-                if(value >= 0)
+                if (value >= 0)
                 {
                     Discount = value;
                 }
+
                 else
                 {
                     Discount = 0;
                     Console.WriteLine("Eroor: Discount must be non-negative");
                 }
+
             }
             get { return Discount; }
-        }
-        public string REGION
-        {
-            set { Region = value; }
-            get { return Region; }
+
         }
 
-        public virtual double CalculateTotal(double price,double shipping_cost, double discount)
+        public virtual double CalculateTotal(double shipping_cost, double discount)
         {
-            return (price + shipping_cost) - discount;
+            return (product.PRICE + shipping_cost) - discount;
         }
 
-        public override void Display()
+        public  void DisplayOrderInfo()
         {
-            base.Display();
-            Console.WriteLine("Region: " + Region + " Shipping Cost: " + ShippingCost+" Discount: "+Discount+" Final price: "+ CalculateTotal(PriceP, ShippingCost, Discount));
+            customer.Display();
+            Console.WriteLine("Shipping Cost: " + ShippingCost+"\nDiscount: "+Discount+"\nFinal price: "+ CalculateTotal(ShippingCost, Discount));
         }
     }
 }
