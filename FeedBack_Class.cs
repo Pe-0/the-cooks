@@ -1,20 +1,21 @@
+using Project;
 using System;
 
 namespace Project
 {
 
-    public abstract class Feedback <T>
+    public abstract class Feedback<T>
     {
-       
+
         protected Customer customer;
         protected T Comment;
-        protected int Rating; 
+        protected int Rating;
 
         public Feedback()
         {
             customer = new Customer();
             Comment = default;
-            Rating = 1;
+            Rating = 1; 
 
         }
 
@@ -50,23 +51,23 @@ namespace Project
         public T COMMENT
         {
             set { Comment = value; }
-            
+
             get { return Comment; }
 
         }
-        public abstract void Display(); 
+        public abstract void Display();
     }
 
-    public class ProductFeedback <T>: Feedback<T>
+    public class ProductFeedback<T> : Feedback<T>
     {
         private Product product;
 
         public ProductFeedback()
         {
             product = new Product();
-            customer= new Customer();
+            customer = new Customer();
             COMMENT = default;
-            RATING= 1;
+            RATING = 1;
         }
 
         public ProductFeedback(Customer cust, T comment, int rating, Product pro)
@@ -81,7 +82,7 @@ namespace Project
 
         public override void Display()
         {
-            Console.WriteLine("Tour Name : "+customer.NAME+"\nThe Product : "+product.NAME+"\nYour Rating : "+RATING+"\nYour comment : "+COMMENT);
+            Console.WriteLine("Tour Name : " + customer.NAME + "\nThe Product : " + product.NAME + "\nYour Rating : " + RATING + "\nYour comment : " + COMMENT);
         }
 
     }
