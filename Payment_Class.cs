@@ -1,19 +1,20 @@
+using Project;
 using System;
 
 namespace Project
 {
-    public abstract class Payment :Order
+    public abstract class Payment : Order
     {
         protected double Amount;
-       
+
 
         public Payment()
         {
             Amount = 0;
-            
+
         }
 
-        public Payment(Customer cust, Product pro, double shippingCost, double discount) :base(cust,  pro,  shippingCost, discount)
+        public Payment(Customer cust, Product pro, double shippingCost, double discount) : base(cust, pro, shippingCost, discount)
         {
             Amount = CalculateTotal(shippingCost, discount);
         }
@@ -24,7 +25,7 @@ namespace Project
     {
         private string CardNumber;
         private double Balance;
-        
+
 
         public CreditCardPayment() : base()
         {
@@ -32,32 +33,32 @@ namespace Project
             Balance = 100000;
         }
 
-        public CreditCardPayment(Customer cust, Product pro, double shippingCost, double discount,string card) :base( cust,  pro,  shippingCost, discount)
+        public CreditCardPayment(Customer cust, Product pro, double shippingCost, double discount, string card) : base(cust, pro, shippingCost, discount)
         {
-            if ( card.Length == 16)
+            if (card.Length == 16)
                 CardNumber = card;
             else
             {
                 CardNumber = "0000000000000000";
                 Console.WriteLine("Error: Card number must be 16 digits.");
             }
-           
+
             Balance = 100000;
 
             if (Balance >= Amount)
             {
-                
+
 
                 Balance -= Amount;
-                Console.WriteLine("Payment successful. Remaining balance: " + Balance+"\nWe will contact you soon....");
+                Console.WriteLine("Payment successful. Remaining balance: " + Balance + "\nWe will contact you soon....");
             }
             else
             {
-                
+
                 Console.WriteLine("Error: Insufficient funds.");
             }
         }
-      
+
 
     }
 
@@ -90,6 +91,6 @@ namespace Project
         }
 
 
-       
+
     }
 }
