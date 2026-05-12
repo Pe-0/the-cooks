@@ -1,0 +1,97 @@
+using System;
+
+namespace Project
+{
+    public class ConsoleInput
+    {
+        public static string ReadText()
+        {
+            string text = Console.ReadLine();
+
+            if (text == null)
+                return "";
+
+            return text;
+        }
+
+        public static int ReadInt()
+        {
+            string text = ReadText();
+
+            while (!IsAllDigits(text))
+            {
+                Console.Write("Enter numbers only: ");
+                text = ReadText();
+            }
+
+            return int.Parse(text);
+        }
+
+        public static double ReadDouble()
+        {
+            string text = ReadText();
+
+            while (!IsAllDigits(text))
+            {
+                Console.Write("Enter numbers only: ");
+                text = ReadText();
+            }
+
+            return double.Parse(text);
+        }
+
+        public static string ReadPhone()
+        {
+            string phone = ReadText();
+
+            while (!IsValidPhone(phone))
+            {
+                Console.Write("Enter a valid phone number: ");
+                phone = ReadText();
+            }
+
+            return phone;
+        }
+
+        public static string ReadCardNumber()
+        {
+            string cardNumber = ReadText();
+
+            while (!IsAllDigits(cardNumber) || cardNumber.Length != 16)
+            {
+                Console.Write("Enter 16 digits only: ");
+                cardNumber = ReadText();
+            }
+
+            return cardNumber;
+        }
+
+        public static bool IsAllDigits(string text)
+        {
+            if (text == null || text == "")
+                return false;
+
+            for (int i = 0; i < text.Length; i++)
+            {
+                if (text[i] < '0' || text[i] > '9')
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static bool IsValidPhone(string phone)
+        {
+            if (phone == null || phone.Length != 11)
+                return false;
+
+            if (phone[0] != '0' || phone[1] != '1')
+                return false;
+
+            if (phone[2] != '0' && phone[2] != '1' && phone[2] != '2' && phone[2] != '5')
+                return false;
+
+            return IsAllDigits(phone);
+        }
+    }
+}
