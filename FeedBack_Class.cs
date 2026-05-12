@@ -12,7 +12,7 @@ namespace Project
         public Feedback()
         {
             customer = new Customer();
-            Comment = default;
+            Comment = default(T);
             Rating = 1;
         }
 
@@ -55,8 +55,7 @@ namespace Project
 
     public class ProductFeedback<T> : Feedback<T>
     {
-        private static readonly string FolderPath = @"C:\Users\peter\source\repos\ConsoleApp5\Data";
-        private static readonly string FileName = Path.Combine(FolderPath, "feedback.txt");
+        private static string FileName = "feedback.txt";
 
         private Product product;
 
@@ -64,7 +63,7 @@ namespace Project
         {
             product = new Product();
             customer = new Customer();
-            COMMENT = default;
+            COMMENT = default(T);
             RATING = 1;
         }
 
@@ -83,58 +82,103 @@ namespace Project
             return customer.ID + "," + customer.NAME + "," + customer.ADDRESS + "," + customer.PHONE + "," + product.ID + "," + product.NAME + "," + product.PRICE + "," + product.PRODUCT_DESCRIPTION + "," + comment + "," + rating;
         }
 
-        public static bool TryParseFileLine(string line, out ProductFeedback<string> feedback)
+        public static void AddProductFeedback(Customer currentCustomer, Warehouse[] warehouseItems, int warehouseCount, Feedback<string>[] feedbacks, string[] feedbackData, ref int feedbackCount)
         {
-            feedback = new ProductFeedback<string>();
+            if (!Customer.HasCustomer(currentCustomer))
+                return;
 
-            if (string.IsNullOrWhiteSpace(line))
-                return false;
+            Console.Write("Enter Product ID: ");
+            Warehouse warehouseItem = Warehouse.FindWarehouseItemByProductID(warehouseItems, warehouseCount, ConsoleInput.ReadInt());
+
+            if (warehouseItem == null)
+            {
+                Console.WriteLine("Product not found.");
+                return;
+            }
+
+            if (feedbackCount >= feedbacks.Length)
+            {
+                Console.WriteLine("Feedback list is full.");
+                return;
+            }
+
+            Product product = warehouseItem.ProductItem;
+            Console.Write("Enter your comment: ");
+            string comment = ConsoleInput.ReadText();
+            Console.Write("Enter rating from 1 to 5: ");
+            int rating = ConsoleInput.ReadInt();
+
+            feedbacks[feedbackCount] = new ProductFeedback<string>(currentCustomer, comment, rating, product);
+            feedbackData[feedbackCount] = ProductFeedback<string>.BuildFileLine(currentCustomer, product, comment, rating);
+            feedbackCount++;
+
+            Console.WriteLine("Feedback added successfully.");
+        }
+
+        public static void DisplayMyFeedback(Customer currentCustomer, Feedback<string>[] feedbacks, string[] feedbackData, int feedbackCount)
+        {
+            if (!Customer.HasCustomer(currentCustomer))
+                return;
+
+            Console.WriteLine("\n--- My Feedback ---");
+            bool found = false;
+
+            for (int i = 0; i < feedbackCount; i++)
+            {
+                string[] data = feedbackData[i].Split(',');
+
+                if (data.Length >= 10 && data[0] == currentCustomer.ID.ToString())
+                {
+                    feedbacks[i].Display();
+                    found = true;
+                }
+            }
+
+            if (!found)
+                Console.WriteLine("You have no feedback.");
+        }
+
+        public static ProductFeedback<string> ParseFileLine(string line)
+        {
+            if (line == null || line == "")
+                return null;
 
             string[] data = line.Split(',');
 
             if (data.Length < 10)
-                return false;
-
-            if (!int.TryParse(data[0], out int customerId))
-                return false;
-
-            if (!int.TryParse(data[4], out int productId))
-                return false;
-
-            if (!double.TryParse(data[6], out double price))
-                return false;
-
-            if (!int.TryParse(data[data.Length - 1], out int rating))
-                return false;
+                return null;
 
             Customer customer = new Customer();
-            customer.ID = customerId;
+            customer.ID = int.Parse(data[0]);
             customer.NAME = data[1];
             customer.ADDRESS = data[2];
             customer.PHONE = data[3];
 
             Product product = new Product();
-            product.ID = productId;
+            product.ID = int.Parse(data[4]);
             product.NAME = data[5];
-            product.PRICE = price;
+            product.PRICE = double.Parse(data[6]);
             product.PRODUCT_DESCRIPTION = data[7];
 
-            string comment = string.Join(",", data, 8, data.Length - 9);
-            feedback = new ProductFeedback<string>(customer, comment, rating, product);
-            return true;
+            return new ProductFeedback<string>(customer, data[8], int.Parse(data[9]), product);
         }
 
         public static void SaveAllToFile(string[] feedbackData, int feedbackCount, string filePath)
         {
-            Directory.CreateDirectory(FolderPath);
-
-            using (StreamWriter writer = new StreamWriter(filePath))
+            try
             {
-                for (int i = 0; i < feedbackCount; i++)
+                using (StreamWriter writer = new StreamWriter(filePath))
                 {
-                    if (!string.IsNullOrWhiteSpace(feedbackData[i]))
-                        writer.WriteLine(feedbackData[i]);
+                    for (int i = 0; i < feedbackCount; i++)
+                    {
+                        if (feedbackData[i] != null && feedbackData[i] != "")
+                            writer.WriteLine(feedbackData[i]);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error saving feedback data: " + ex.Message);
             }
         }
 
@@ -147,21 +191,36 @@ namespace Project
         {
             int feedbackCount = 0;
 
-            if (!File.Exists(filePath))
-                return feedbackCount;
-
-            using (StreamReader reader = new StreamReader(filePath))
+            try
             {
-                string line;
-                while ((line = reader.ReadLine()) != null && feedbackCount < feedbacks.Length)
+                if (!File.Exists(filePath))
+                    return feedbackCount;
+
+                using (StreamReader reader = new StreamReader(filePath))
                 {
-                    if (TryParseFileLine(line, out ProductFeedback<string> feedback))
+                    string line;
+                    while ((line = reader.ReadLine()) != null && feedbackCount < feedbacks.Length)
                     {
-                        feedbacks[feedbackCount] = feedback;
-                        feedbackData[feedbackCount] = line;
-                        feedbackCount++;
+                        try
+                        {
+                            ProductFeedback<string> feedback = ParseFileLine(line);
+
+                            if (feedback != null)
+                            {
+                                feedbacks[feedbackCount] = feedback;
+                                feedbackData[feedbackCount] = line;
+                                feedbackCount++;
+                            }
+                        }
+                        catch
+                        {
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading feedback data: " + ex.Message);
             }
 
             return feedbackCount;
