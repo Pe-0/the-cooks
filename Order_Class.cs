@@ -5,8 +5,7 @@ namespace Project
 {
     public class Order
     {
-        private static readonly string FolderPath = @"C:\Users\peter\source\repos\ConsoleApp5\Data";
-        private static readonly string FileName = Path.Combine(FolderPath, "order.txt");
+        private static string FileName = "order.txt";
 
         protected Customer customer;
         protected Product product;
@@ -84,60 +83,123 @@ namespace Project
             return customer.ID + "," + customer.NAME + "," + customer.ADDRESS + "," + customer.PHONE + "," + product.ID + "," + product.NAME + "," + product.PRICE + "," + product.PRODUCT_DESCRIPTION + "," + shippingCost + "," + discount;
         }
 
-        public static bool TryParse(string line, out Order order)
+        public static void MakeOrder(Customer customer, Warehouse[] warehouseItems, int warehouseCount, Order[] orders, string[] orderData, ref int orderCount)
         {
-            order = new Order();
+            if (!Customer.HasCustomer(customer))
+                return;
 
-            if (string.IsNullOrWhiteSpace(line))
-                return false;
+            if (warehouseCount == 0)
+            {
+                Console.WriteLine("No products available now.");
+                return;
+            }
+
+            if (orderCount >= orders.Length)
+            {
+                Console.WriteLine("Order list is full.");
+                return;
+            }
+
+            Warehouse.DisplayAllProducts(warehouseItems, warehouseCount);
+            Console.Write("Enter Product ID to order: ");
+            Warehouse warehouseItem = Warehouse.FindWarehouseItemByProductID(warehouseItems, warehouseCount, ConsoleInput.ReadInt());
+
+            if (warehouseItem == null)
+            {
+                Console.WriteLine("Product not found.");
+                return;
+            }
+
+            if (!warehouseItem.HasStock())
+            {
+                Console.WriteLine("This product is out of stock.");
+                return;
+            }
+
+            Product product = warehouseItem.ProductItem;
+            double shippingCost = warehouseItem.SHIPPING_COST;
+            double discount = 0;
+
+            orders[orderCount] = new Order(customer, product, shippingCost, discount);
+            orderData[orderCount] = BuildFileLine(customer, product, shippingCost, discount);
+            orderCount++;
+            warehouseItem.DecreaseStock();
+
+            Console.WriteLine("Order created successfully.");
+            Console.WriteLine("Shipping cost: " + shippingCost);
+            Console.WriteLine("Remaining quantity: " + warehouseItem.QUANTITY);
+        }
+
+        public static void DisplayMyOrders(Customer customer, string[] orderData, int orderCount)
+        {
+            if (!Customer.HasCustomer(customer))
+                return;
+
+            Console.WriteLine("\n--- My Orders ---");
+            bool found = false;
+
+            for (int i = 0; i < orderCount; i++)
+            {
+                string[] data = orderData[i].Split(',');
+
+                if (data.Length >= 10 && data[0] == customer.ID.ToString())
+                {
+                    Console.WriteLine("Order Number: " + (i + 1));
+                    Console.WriteLine("Product: " + data[5]);
+                    Console.WriteLine("Price: " + data[6]);
+                    Console.WriteLine("Description: " + data[7]);
+                    Console.WriteLine("Shipping Cost: " + data[8]);
+                    Console.WriteLine("Discount: " + data[9]);
+                    Console.WriteLine();
+                    found = true;
+                }
+            }
+
+            if (!found)
+                Console.WriteLine("You have no orders.");
+        }
+
+        public static Order ParseFileLine(string line)
+        {
+            if (line == null || line == "")
+                return null;
 
             string[] data = line.Split(',');
 
             if (data.Length < 10)
-                return false;
-
-            if (!int.TryParse(data[0], out int customerId))
-                return false;
-
-            if (!int.TryParse(data[4], out int productId))
-                return false;
-
-            if (!double.TryParse(data[6], out double price))
-                return false;
-
-            if (!double.TryParse(data[8], out double shippingCost))
-                return false;
-
-            if (!double.TryParse(data[9], out double discount))
-                return false;
+                return null;
 
             Customer customer = new Customer();
-            customer.ID = customerId;
+            customer.ID = int.Parse(data[0]);
             customer.NAME = data[1];
             customer.ADDRESS = data[2];
             customer.PHONE = data[3];
 
             Product product = new Product();
-            product.ID = productId;
+            product.ID = int.Parse(data[4]);
             product.NAME = data[5];
-            product.PRICE = price;
+            product.PRICE = double.Parse(data[6]);
             product.PRODUCT_DESCRIPTION = data[7];
 
-            order = new Order(customer, product, shippingCost, discount);
-            return true;
+            return new Order(customer, product, double.Parse(data[8]), double.Parse(data[9]));
         }
 
         public static void SaveAllToFile(string[] orderData, int orderCount, string filePath)
         {
-            Directory.CreateDirectory(FolderPath);
-
-            using (StreamWriter writer = new StreamWriter(filePath))
+            try
             {
-                for (int i = 0; i < orderCount; i++)
+                using (StreamWriter writer = new StreamWriter(filePath))
                 {
-                    if (!string.IsNullOrWhiteSpace(orderData[i]))
-                        writer.WriteLine(orderData[i]);
+                    for (int i = 0; i < orderCount; i++)
+                    {
+                        if (orderData[i] != null && orderData[i] != "")
+                            writer.WriteLine(orderData[i]);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error saving order data: " + ex.Message);
             }
         }
 
@@ -150,21 +212,36 @@ namespace Project
         {
             int orderCount = 0;
 
-            if (!File.Exists(filePath))
-                return orderCount;
-
-            using (StreamReader reader = new StreamReader(filePath))
+            try
             {
-                string line;
-                while ((line = reader.ReadLine()) != null && orderCount < orders.Length)
+                if (!File.Exists(filePath))
+                    return orderCount;
+
+                using (StreamReader reader = new StreamReader(filePath))
                 {
-                    if (TryParse(line, out Order order))
+                    string line;
+                    while ((line = reader.ReadLine()) != null && orderCount < orders.Length)
                     {
-                        orders[orderCount] = order;
-                        orderData[orderCount] = line;
-                        orderCount++;
+                        try
+                        {
+                            Order order = ParseFileLine(line);
+
+                            if (order != null)
+                            {
+                                orders[orderCount] = order;
+                                orderData[orderCount] = line;
+                                orderCount++;
+                            }
+                        }
+                        catch
+                        {
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading order data: " + ex.Message);
             }
 
             return orderCount;
