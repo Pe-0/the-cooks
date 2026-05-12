@@ -1,22 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Project
 {
-    public  class Customer : ICustomer
+    public class Customer : ICustomer
     {
-        //Peter Part
+        private static readonly string FolderPath = @"C:\Users\peter\source\repos\ConsoleApp5\Data";
+        private static readonly string FileName = Path.Combine(FolderPath, "customer.txt");
+
         protected string Name;
         protected string Address;
         protected int Id;
         private static int CustomerCount = 0;
         protected string Phone;
 
-        public Customer()//constructor without parameters + Customer Counter
+        public Customer()
         {
             Name = "not null";
             Address = "Luxor";
@@ -24,25 +22,29 @@ namespace Project
             Phone = "01000000000";
             CustomerCount++;
         }
-        public Customer(string Name, string Addrress, int Id, string Phone)//constructor with parameters + CustomerCount
+
+        public Customer(string Name, string Address, int Id, string Phone)
         {
             NAME = Name;
-            ADDRESS = Addrress;
+            ADDRESS = Address;
             ID = Id;
             PHONE = Phone;
             CustomerCount++;
         }
-        public string NAME //Name property
+
+        public string NAME
         {
             set { Name = value; }
             get { return Name; }
         }
-        public string ADDRESS //Address property
+
+        public string ADDRESS
         {
             set { Address = value; }
             get { return Address; }
         }
-        public int ID //id property
+
+        public int ID
         {
             set
             {
@@ -56,6 +58,7 @@ namespace Project
             }
             get { return Id; }
         }
+
         public string PHONE
         {
             set
@@ -75,15 +78,79 @@ namespace Project
             }
             get { return Phone; }
         }
+
+        public string ToFileLine()
+        {
+            return ID + "," + NAME + "," + ADDRESS + "," + PHONE;
+        }
+
+        public static bool TryParse(string line, out Customer customer)
+        {
+            customer = new Customer();
+
+            if (string.IsNullOrWhiteSpace(line))
+                return false;
+
+            string[] data = line.Split(',');
+
+            if (data.Length < 4)
+                return false;
+
+            if (!int.TryParse(data[0], out int id))
+                return false;
+
+            customer.ID = id;
+            customer.NAME = data[1];
+            customer.ADDRESS = data[2];
+            customer.PHONE = data[3];
+            return true;
+        }
+
+        public static void SaveAllToFile(Customer[] customers, int customerCount, string filePath)
+        {
+            Directory.CreateDirectory(FolderPath);
+
+            using (StreamWriter writer = new StreamWriter(filePath))
+            {
+                for (int i = 0; i < customerCount; i++)
+                    writer.WriteLine(customers[i].ToFileLine());
+            }
+        }
+
+        public static void SaveAllToFile(Customer[] customers, int customerCount)
+        {
+            SaveAllToFile(customers, customerCount, FileName);
+        }
+
+        public static int LoadAllFromFile(Customer[] customers, string filePath)
+        {
+            int customerCount = 0;
+
+            if (!File.Exists(filePath))
+                return customerCount;
+
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null && customerCount < customers.Length)
+                {
+                    if (TryParse(line, out Customer customer))
+                        customers[customerCount++] = customer;
+                }
+            }
+
+            return customerCount;
+        }
+
+        public static int LoadAllFromFile(Customer[] customers)
+        {
+            return LoadAllFromFile(customers, FileName);
+        }
+
         public void SaveToFile(string filePath)
         {
-            StreamWriter writer = new StreamWriter(filePath, true);
-            writer.WriteLine(Name);
-            writer.WriteLine(Address);
-            writer.WriteLine(Id);
-            writer.WriteLine(Phone);
-            writer.WriteLine();
-            writer.Close();
+            using (StreamWriter writer = new StreamWriter(filePath, true))
+                writer.WriteLine(ToFileLine());
         }
 
         public void DisplayAllFromFile(string filePath)
@@ -94,45 +161,44 @@ namespace Project
                 return;
             }
 
-            StreamReader reader = new StreamReader(filePath);
-
-            while (!reader.EndOfStream)
+            using (StreamReader reader = new StreamReader(filePath))
             {
-                string name = reader.ReadLine();
-
-                if (name == "")
-                    continue;
-
-                string address = reader.ReadLine();
-                string id = reader.ReadLine();
-                string phone = reader.ReadLine();
-
-                Console.WriteLine("Name: " + name + " Address: " + address + " ID: " + id + " Phone: " + phone);
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    if (TryParse(line, out Customer customer))
+                        Console.WriteLine("Name: " + customer.NAME + " Address: " + customer.ADDRESS + " ID: " + customer.ID + " Phone: " + customer.PHONE);
+                }
             }
-
-            reader.Close();
         }
 
         public void LoadFromFile(string filePath)
         {
-            StreamReader reader = new StreamReader(filePath);
-            NAME = reader.ReadLine();
-            ADDRESS = reader.ReadLine();
-            ID = int.Parse(reader.ReadLine());
-            PHONE = reader.ReadLine();
-            Console.WriteLine("Customer data loaded from file successfully." + "Your Name is :" + NAME + " Your Address is :" + ADDRESS + " Your ID is :" + ID + " Your Phone Number is :" + PHONE);
-            reader.Close();
+            if (!File.Exists(filePath))
+                return;
+
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                string line = reader.ReadLine();
+                if (TryParse(line, out Customer customer))
+                {
+                    NAME = customer.NAME;
+                    ADDRESS = customer.ADDRESS;
+                    ID = customer.ID;
+                    PHONE = customer.PHONE;
+                }
+            }
         }
 
-        public virtual void Display()//Customer Info
+        public virtual void Display()
         {
             Console.WriteLine("Your Info");
             Console.WriteLine("Your Name is : " + Name + "  Your Address is : " + Address + "   Your ID is : " + ID + "   Your Phone Number is : " + Phone);
         }
-        public static void NumCustomer() // CustomerCount
+
+        public static void NumCustomer()
         {
             Console.WriteLine("The Number of Customer is : " + CustomerCount);
         }
-
     }
 }
