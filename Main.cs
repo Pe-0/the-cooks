@@ -1,36 +1,29 @@
 using System;
-using System.IO;
 
 namespace Project
 {
-    public class program
+    public class Program
     {
         static Customer[] customers = new Customer[100];
-        static Product[] products = new Product[100];
+        static Warehouse[] warehouseItems = new Warehouse[100];
         static Order[] orders = new Order[100];
         static Payment[] payments = new Payment[100];
         static Feedback<string>[] feedbacks = new Feedback<string>[100];
 
         static string[] orderData = new string[100];
+        static string[] paymentData = new string[100];
         static string[] feedbackData = new string[100];
 
         static Customer currentCustomer = null;
 
         static int customerCount = 0;
-        static int productCount = 0;
+        static int warehouseCount = 0;
         static int orderCount = 0;
         static int paymentCount = 0;
         static int feedbackCount = 0;
 
-        static string folderPath = @"C:\Users\peter\source\repos\ConsoleApp5\Data";
-        static string customerFileName = Path.Combine(folderPath, "customer.txt");
-        static string productFileName = Path.Combine(folderPath, "product.txt");
-        static string orderFileName = Path.Combine(folderPath, "order.txt");
-        static string feedbackFileName = Path.Combine(folderPath, "feedback.txt");
-
         static void Main(string[] args)
         {
-            Directory.CreateDirectory(folderPath);
             LoadDataFromFile();
 
             int choice;
@@ -41,16 +34,17 @@ namespace Project
                     Console.WriteLine("\n==== Online Shipping Menu ====");
                     Console.WriteLine("1. Register / Login");
                     Console.WriteLine("2. Display My Info");
-                    Console.WriteLine("3. Display Products");
+                    Console.WriteLine("3. Display Warehouse Products");
                     Console.WriteLine("4. Search Product by ID");
                     Console.WriteLine("5. Make Order");
                     Console.WriteLine("6. Display My Orders");
                     Console.WriteLine("7. Pay For Order");
-                    Console.WriteLine("8. Add Product Feedback");
-                    Console.WriteLine("9. Display My Feedback");
-                    Console.WriteLine("10. Exit and Save");
+                    Console.WriteLine("8. Display My Payments");
+                    Console.WriteLine("9. Add Product Feedback");
+                    Console.WriteLine("10. Display My Feedback");
+                    Console.WriteLine("11. Exit and Save");
                     Console.Write("Enter your choice: ");
-                    choice = int.Parse(Console.ReadLine());
+                    choice = int.Parse(Console.ReadLine() ?? "");
 
                     switch (choice)
                     {
@@ -76,12 +70,15 @@ namespace Project
                             PayForOrder();
                             break;
                         case 8:
-                            AddProductFeedback();
+                            DisplayMyPayments();
                             break;
                         case 9:
-                            DisplayMyFeedback();
+                            AddProductFeedback();
                             break;
                         case 10:
+                            DisplayMyFeedback();
+                            break;
+                        case 11:
                             SaveDataToFile();
                             Console.WriteLine("Data saved. Goodbye!");
                             break;
@@ -95,22 +92,22 @@ namespace Project
                     Console.WriteLine("Invalid input! Please enter a valid number.");
                     choice = 0;
                 }
-            } while (choice != 10);
+            } while (choice != 11);
         }
 
         static string ReadText()
         {
-            return Console.ReadLine() ;
+            return Console.ReadLine() ?? "";
         }
 
         static int ReadInt()
         {
-            return int.Parse(Console.ReadLine());
+            return int.Parse(Console.ReadLine() ?? "");
         }
 
         static double ReadDouble()
         {
-            return double.Parse(Console.ReadLine());
+            return double.Parse(Console.ReadLine() ?? "");
         }
 
         static bool HasCustomer()
@@ -135,12 +132,12 @@ namespace Project
             return -1;
         }
 
-        static Product FindProductByID(int id)
+        static Warehouse FindWarehouseItemByProductID(int id)
         {
-            for (int i = 0; i < productCount; i++)
+            for (int i = 0; i < warehouseCount; i++)
             {
-                if (products[i].ID == id)
-                    return products[i];
+                if (warehouseItems[i].ProductItem.ID == id)
+                    return warehouseItems[i];
             }
 
             return null;
@@ -157,6 +154,12 @@ namespace Project
                 currentCustomer = customers[index];
                 Console.WriteLine("Login successful.");
                 currentCustomer.Display();
+                return;
+            }
+
+            if (customerCount >= customers.Length)
+            {
+                Console.WriteLine("Customer list is full.");
                 return;
             }
 
@@ -184,27 +187,27 @@ namespace Project
 
         static void DisplayAllProducts()
         {
-            Console.WriteLine("\n--- Available Products ---");
+            Console.WriteLine("\n--- Warehouse Products ---");
 
-            if (productCount == 0)
+            if (warehouseCount == 0)
             {
                 Console.WriteLine("No products available now.");
                 return;
             }
 
-            for (int i = 0; i < productCount; i++)
-                products[i].DisplayInfo();
+            for (int i = 0; i < warehouseCount; i++)
+                warehouseItems[i].DisplayInfo();
         }
 
         static void SearchProductByID()
         {
             Console.Write("Enter Product ID: ");
-            Product product = FindProductByID(ReadInt());
+            Warehouse warehouseItem = FindWarehouseItemByProductID(ReadInt());
 
-            if (product == null)
+            if (warehouseItem == null)
                 Console.WriteLine("Product not found.");
             else
-                product.DisplayInfo();
+                warehouseItem.DisplayInfo();
         }
 
         static void MakeOrder()
@@ -212,31 +215,46 @@ namespace Project
             if (!HasCustomer())
                 return;
 
-            if (productCount == 0)
+            if (warehouseCount == 0)
             {
                 Console.WriteLine("No products available now.");
                 return;
             }
 
+            if (orderCount >= orders.Length)
+            {
+                Console.WriteLine("Order list is full.");
+                return;
+            }
+
             DisplayAllProducts();
             Console.Write("Enter Product ID to order: ");
-            Product product = FindProductByID(ReadInt());
+            Warehouse warehouseItem = FindWarehouseItemByProductID(ReadInt());
 
-            if (product == null)
+            if (warehouseItem == null)
             {
                 Console.WriteLine("Product not found.");
                 return;
             }
 
+            if (!warehouseItem.HasStock())
+            {
+                Console.WriteLine("This product is out of stock.");
+                return;
+            }
+
+            Product product = warehouseItem.ProductItem;
             double shippingCost = 50;
             double discount = 0;
 
             orders[orderCount] = new Order(currentCustomer, product, shippingCost, discount);
-            orderData[orderCount] = currentCustomer.ID + "," + currentCustomer.NAME + "," + currentCustomer.ADDRESS + "," + currentCustomer.PHONE + "," + product.ID + "," + product.NAME + "," + product.PRICE + "," + product.PRODUCT_DESCRIPTION + "," + shippingCost + "," + discount;
+            orderData[orderCount] = Order.BuildFileLine(currentCustomer, product, shippingCost, discount);
             orderCount++;
+            warehouseItem.DecreaseStock();
 
             Console.WriteLine("Order created successfully.");
             Console.WriteLine("Shipping cost: " + shippingCost);
+            Console.WriteLine("Remaining quantity: " + warehouseItem.QUANTITY);
         }
 
         static void DisplayMyOrders()
@@ -268,10 +286,29 @@ namespace Project
                 Console.WriteLine("You have no orders.");
         }
 
+        static bool IsOrderPaid(int orderNumber)
+        {
+            for (int i = 0; i < paymentCount; i++)
+            {
+                string[] data = paymentData[i].Split(',');
+
+                if (data.Length > 0 && data[0] == orderNumber.ToString())
+                    return true;
+            }
+
+            return false;
+        }
+
         static void PayForOrder()
         {
             if (!HasCustomer())
                 return;
+
+            if (paymentCount >= payments.Length)
+            {
+                Console.WriteLine("Payment list is full.");
+                return;
+            }
 
             DisplayMyOrders();
             Console.Write("Enter order number to pay: ");
@@ -280,6 +317,12 @@ namespace Project
             if (orderNumber < 1 || orderNumber > orderCount)
             {
                 Console.WriteLine("Order not found.");
+                return;
+            }
+
+            if (IsOrderPaid(orderNumber))
+            {
+                Console.WriteLine("This order is already paid.");
                 return;
             }
 
@@ -304,20 +347,59 @@ namespace Project
             Console.Write("Choose payment method: ");
             int paymentType = ReadInt();
 
+            Payment payment;
             if (paymentType == 1)
             {
                 Console.Write("Enter 16 digit card number: ");
                 string cardNumber = ReadText();
-                payments[paymentCount++] = new CreditCardPayment(currentCustomer, product, shippingCost, discount, cardNumber);
+                Console.Write("Enter your card balance: ");
+                double balance = ReadDouble();
+                payment = new CreditCardPayment(currentCustomer, product, shippingCost, discount, cardNumber, balance);
             }
             else if (paymentType == 2)
             {
-                payments[paymentCount++] = new CashOnDelivery(currentCustomer, product, shippingCost, discount);
+                payment = new CashOnDelivery(currentCustomer, product, shippingCost, discount);
             }
             else
             {
                 Console.WriteLine("Invalid payment method.");
+                return;
             }
+
+            if (!payment.IS_SUCCESSFUL)
+                return;
+
+            payments[paymentCount] = payment;
+            paymentData[paymentCount] = Payment.BuildFileLine(orderNumber, orderData[orderNumber - 1], payment.PAYMENT_METHOD, payment.AMOUNT);
+            paymentCount++;
+            Console.WriteLine("Payment saved successfully.");
+        }
+
+        static void DisplayMyPayments()
+        {
+            if (!HasCustomer())
+                return;
+
+            Console.WriteLine("\n--- My Payments ---");
+            bool found = false;
+
+            for (int i = 0; i < paymentCount; i++)
+            {
+                string[] data = paymentData[i].Split(',');
+
+                if (data.Length >= 13 && data[1] == currentCustomer.ID.ToString())
+                {
+                    Console.WriteLine("Order Number: " + data[0]);
+                    Console.WriteLine("Product: " + data[6]);
+                    Console.WriteLine("Payment Method: " + data[11]);
+                    Console.WriteLine("Amount: " + data[12]);
+                    Console.WriteLine();
+                    found = true;
+                }
+            }
+
+            if (!found)
+                Console.WriteLine("You have no payments.");
         }
 
         static void AddProductFeedback()
@@ -326,21 +408,28 @@ namespace Project
                 return;
 
             Console.Write("Enter Product ID: ");
-            Product product = FindProductByID(ReadInt());
+            Warehouse warehouseItem = FindWarehouseItemByProductID(ReadInt());
 
-            if (product == null)
+            if (warehouseItem == null)
             {
                 Console.WriteLine("Product not found.");
                 return;
             }
 
+            if (feedbackCount >= feedbacks.Length)
+            {
+                Console.WriteLine("Feedback list is full.");
+                return;
+            }
+
+            Product product = warehouseItem.ProductItem;
             Console.Write("Enter your comment: ");
             string comment = ReadText();
             Console.Write("Enter rating from 1 to 5: ");
             int rating = ReadInt();
 
             feedbacks[feedbackCount] = new ProductFeedback<string>(currentCustomer, comment, rating, product);
-            feedbackData[feedbackCount] = currentCustomer.ID + "," + currentCustomer.NAME + "," + currentCustomer.ADDRESS + "," + currentCustomer.PHONE + "," + product.ID + "," + product.NAME + "," + product.PRICE + "," + product.PRODUCT_DESCRIPTION + "," + comment + "," + rating;
+            feedbackData[feedbackCount] = ProductFeedback<string>.BuildFileLine(currentCustomer, product, comment, rating);
             feedbackCount++;
 
             Console.WriteLine("Feedback added successfully.");
@@ -373,29 +462,11 @@ namespace Project
         {
             try
             {
-                using (StreamWriter writer = new StreamWriter(customerFileName))
-                {
-                    for (int i = 0; i < customerCount; i++)
-                        writer.WriteLine(customers[i].ID + "," + customers[i].NAME + "," + customers[i].ADDRESS + "," + customers[i].PHONE);
-                }
-
-                using (StreamWriter writer = new StreamWriter(productFileName))
-                {
-                    for (int i = 0; i < productCount; i++)
-                        writer.WriteLine(products[i].ID + "," + products[i].NAME + "," + products[i].PRICE + "," + products[i].PRODUCT_DESCRIPTION);
-                }
-
-                using (StreamWriter writer = new StreamWriter(orderFileName))
-                {
-                    for (int i = 0; i < orderCount; i++)
-                        writer.WriteLine(orderData[i]);
-                }
-
-                using (StreamWriter writer = new StreamWriter(feedbackFileName))
-                {
-                    for (int i = 0; i < feedbackCount; i++)
-                        writer.WriteLine(feedbackData[i]);
-                }
+                Customer.SaveAllToFile(customers, customerCount);
+                Warehouse.SaveAllToFile(warehouseItems, warehouseCount);
+                Order.SaveAllToFile(orderData, orderCount);
+                Payment.SavePaymentsToFile(paymentData, paymentCount);
+                ProductFeedback<string>.SaveAllToFile(feedbackData, feedbackCount);
 
                 Console.WriteLine("Data saved to file successfully.");
             }
@@ -409,10 +480,11 @@ namespace Project
         {
             try
             {
-                LoadCustomers();
-                LoadProducts();
-                LoadOrders();
-                LoadFeedback();
+                customerCount = Customer.LoadAllFromFile(customers);
+                warehouseCount = Warehouse.LoadAllFromFile(warehouseItems);
+                orderCount = Order.LoadAllFromFile(orders, orderData);
+                paymentCount = Payment.LoadPaymentsFromFile(paymentData);
+                feedbackCount = ProductFeedback<string>.LoadAllFromFile(feedbacks, feedbackData);
                 Console.WriteLine("Data loaded from file successfully.");
             }
             catch (Exception ex)
@@ -421,130 +493,5 @@ namespace Project
             }
         }
 
-        static void LoadCustomers()
-        {
-            if (!File.Exists(customerFileName))
-                return;
-
-            using (StreamReader reader = new StreamReader(customerFileName))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null && customerCount < customers.Length)
-                {
-                    string[] data = line.Split(',');
-
-                    if (data.Length < 4)
-                        continue;
-
-                    Customer customer = new Customer();
-                    customer.ID = int.Parse(data[0]);
-                    customer.NAME = data[1];
-                    customer.ADDRESS = data[2];
-                    customer.PHONE = data[3];
-
-                    customers[customerCount++] = customer;
-                }
-            }
-        }
-
-        static void LoadProducts()
-        {
-            if (!File.Exists(productFileName))
-                return;
-
-            using (StreamReader reader = new StreamReader(productFileName))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null && productCount < products.Length)
-                {
-                    string[] data = line.Split(',');
-
-                    if (data.Length < 4)
-                        continue;
-
-                    Product product = new Product();
-                    product.ID = int.Parse(data[0]);
-                    product.NAME = data[1];
-                    product.PRICE = double.Parse(data[2]);
-                    product.PRODUCT_DESCRIPTION = data[3];
-
-                    products[productCount++] = product;
-                }
-            }
-        }
-
-        static void LoadOrders()
-        {
-            if (!File.Exists(orderFileName))
-                return;
-
-            using (StreamReader reader = new StreamReader(orderFileName))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null && orderCount < orders.Length)
-                {
-                    string[] data = line.Split(',');
-
-                    if (data.Length < 10)
-                        continue;
-
-                    Customer customer = new Customer();
-                    customer.ID = int.Parse(data[0]);
-                    customer.NAME = data[1];
-                    customer.ADDRESS = data[2];
-                    customer.PHONE = data[3];
-
-                    Product product = new Product();
-                    product.ID = int.Parse(data[4]);
-                    product.NAME = data[5];
-                    product.PRICE = double.Parse(data[6]);
-                    product.PRODUCT_DESCRIPTION = data[7];
-
-                    double shippingCost = double.Parse(data[8]);
-                    double discount = double.Parse(data[9]);
-
-                    orders[orderCount] = new Order(customer, product, shippingCost, discount);
-                    orderData[orderCount] = line;
-                    orderCount++;
-                }
-            }
-        }
-
-        static void LoadFeedback()
-        {
-            if (!File.Exists(feedbackFileName))
-                return;
-
-            using (StreamReader reader = new StreamReader(feedbackFileName))
-            {
-                string line;
-                while ((line = reader.ReadLine()) != null && feedbackCount < feedbacks.Length)
-                {
-                    string[] data = line.Split(',');
-
-                    if (data.Length < 10)
-                        continue;
-
-                    Customer customer = new Customer();
-                    customer.ID = int.Parse(data[0]);
-                    customer.NAME = data[1];
-                    customer.ADDRESS = data[2];
-                    customer.PHONE = data[3];
-
-                    Product product = new Product();
-                    product.ID = int.Parse(data[4]);
-                    product.NAME = data[5];
-                    product.PRICE = double.Parse(data[6]);
-                    product.PRODUCT_DESCRIPTION = data[7];
-
-                    string comment = data[8];
-                    int rating = int.Parse(data[9]);
-
-                    feedbacks[feedbackCount] = new ProductFeedback<string>(customer, comment, rating, product);
-                    feedbackData[feedbackCount] = line;
-                    feedbackCount++;
-                }
-            }
-        }
     }
 }
