@@ -5,9 +5,9 @@ namespace Project
     public class Product : IProduct
     {
         protected int Id;
-        protected string Name;
+        protected string Name = "null";
         protected double Price;
-        protected string Product_Description;
+        protected string Product_Description = "null";
 
         public Product()
         {
@@ -36,7 +36,7 @@ namespace Project
                 else
                 {
                     this.Id = 0;
-                    Console.WriteLine("Error in ID number");
+                    Console.WriteLine("Error in ID number.");
                 }
             }
             get { return Id; }
@@ -71,7 +71,10 @@ namespace Project
 
         public virtual void DisplayInfo()
         {
-            Console.WriteLine("\nID: " + Id + " Name: " + Name + " Product Description: " + Product_Description + " Price: " + Price);
+            Console.WriteLine("ID          : " + Id);
+            Console.WriteLine("Name        : " + Name);
+            Console.WriteLine("Description : " + Product_Description);
+            Console.WriteLine("Price       : " + Price);
         }
     }
 }
